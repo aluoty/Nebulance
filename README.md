@@ -2,6 +2,7 @@
 A 3D space RPG game in development, using React, Threejs, TS(X)/JS, HTML and CSS.
 
 ## Purpose And Vision
++ Name inspiration taken from Nebula(Star clouds) + Balance &#8594; Nebu-lance.
 + To build a game from scratch while learning React, Threejs, Nodejs, TS(X), HTML and CSS.
 + Influenced by notable game titles: EVE Online, Star Citizen.
 + Using low-poly stylized models, such as ones from https://poly.pizza/.
