@@ -3,6 +3,8 @@ import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import type { Planet as PlanetData, Moon as MoonData } from "../types/starSystem";
 import { computeOrbitPosition } from "../systems/orbit";
+import { gravitySystem } from "../systems/gravity";
+import { deformGeometry } from "../systems/deformation";
 
 type PlanetProps = {
   planet: PlanetData;
@@ -90,12 +92,22 @@ export default function Planet({ planet, center, systemPosition = [0,0,0] }: Pla
     meshRef.current.rotation.y += planet.rotationSpeed;
 
     const worldPos = new THREE.Vector3(systemPosition[0], systemPosition[1], systemPosition[2]).add(orbitPosition);
-    if (!(window as any).activePlanets) (window as any).activePlanets = new Map();
-    (window as any).activePlanets.set(`${planet.seed}`, { 
-       position: worldPos, 
-       size: planet.size, 
-       atmosphere: config.atmosphere 
+    
+    const repulsion = gravitySystem.resolvePlanetCollisions(`${planet.seed}`, worldPos, planet.size);
+    worldPos.add(repulsion);
+    meshRef.current.position.add(repulsion);
+
+    gravitySystem.registerBody({
+       id: `${planet.seed}`,
+       position: worldPos,
+       size: planet.size,
+       atmosphereColor: config.atmosphere
     });
+
+    const hits = gravitySystem.pullHits(`${planet.seed}`);
+    if (hits.length > 0) {
+      deformGeometry(geometry, meshRef.current, hits);
+    }
   });
 
   return (
@@ -103,8 +115,11 @@ export default function Planet({ planet, center, systemPosition = [0,0,0] }: Pla
       <mesh ref={meshRef} geometry={geometry}>
         <meshStandardMaterial color={config.color} roughness={config.roughness} metalness={config.metalness} emissive={config.emissive} />
       </mesh>
-      <mesh geometry={geometry.clone()} scale={1.08}>
-        <meshBasicMaterial color={config.atmosphere} transparent opacity={0.18} side={THREE.BackSide} />
+      <mesh geometry={geometry.clone()} scale={1.05}>
+        <meshBasicMaterial color={config.atmosphere} transparent opacity={0.25} side={THREE.BackSide} depthWrite={false} blending={THREE.AdditiveBlending} />
+      </mesh>
+      <mesh geometry={geometry.clone()} scale={1.2}>
+        <meshBasicMaterial color={config.atmosphere} transparent opacity={0.08} side={THREE.BackSide} depthWrite={false} blending={THREE.AdditiveBlending} />
       </mesh>
       {planet.hasRings && (
         <mesh rotation={[Math.PI / 2 + 0.2, 0, 0]}>

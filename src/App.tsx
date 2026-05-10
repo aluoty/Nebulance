@@ -42,7 +42,9 @@ export default function App() {
 
   const handleStartGame = (e: React.FormEvent) => {
     e.preventDefault();
-    setWorldSeed(inputWorldSeed);
+    const finalSeed = inputWorldSeed.trim() === "" ? generateRandomSeed() : inputWorldSeed;
+    setWorldSeed(finalSeed);
+    setInputWorldSeed(finalSeed);
     setGameState("PLAYING");
   };
 

@@ -3,6 +3,7 @@ import { useGLTF } from "@react-three/drei";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import spaceshipUrl from "../assets/Spaceship.glb?url";
+import { gravitySystem } from "../systems/gravity";
 
 type InputKeys = {
   w: boolean;
@@ -187,10 +188,12 @@ export default function Ship({ position, rotation }: { position: React.RefObject
       energyBar.style.boxShadow = boostCooldown.current ? "0 0 10px #ff4444" : "0 0 10px #00ffff";
     }
 
-    const accelerationStrength = isBoosting ? 0.04 : 0.014;
-    const maxSpeed = isBoosting ? 1.8 : 0.65;
-    const rollSpeed = 0.06;
-    const turnSpeed = 0.04;
+    const feel = gravitySystem.getLandingFeel(position.current);
+
+    const accelerationStrength = (isBoosting ? 0.04 : 0.014) * feel.accelerationMult;
+    const maxSpeed = (isBoosting ? 1.8 : 0.65) * feel.maxSpeedMult;
+    const rollSpeed = 0.06 * feel.turnMult;
+    const turnSpeed = 0.04 * feel.turnMult;
 
     if (keys.current.left) {
       rotation.current.y += turnSpeed;
@@ -224,26 +227,7 @@ export default function Ship({ position, rotation }: { position: React.RefObject
       velocity.current.addScaledVector(tempAccel.current, delta * 60);
     }
 
-    let gravityForce = new THREE.Vector3();
-    let nearestPlanet: any = null;
-    let nearestDist = Infinity;
-
-    if ((window as any).activePlanets) {
-      (window as any).activePlanets.forEach((pData: any) => {
-        const dist = position.current.distanceTo(pData.position);
-        if (dist < nearestDist) {
-          nearestDist = dist;
-          nearestPlanet = pData;
-        }
-        
-        if (dist < pData.size * 15 && dist > pData.size) {
-          const dir = pData.position.clone().sub(position.current).normalize();
-          const forceMag = (pData.size * 5) / (dist * dist);
-          gravityForce.add(dir.multiplyScalar(forceMag * delta));
-        }
-      });
-    }
-
+    const gravityForce = gravitySystem.getGravityForce(position.current, delta);
     velocity.current.add(gravityForce);
 
     velocity.current.multiplyScalar(0.98);
@@ -252,14 +236,37 @@ export default function Ship({ position, rotation }: { position: React.RefObject
     }
 
     position.current.addScaledVector(velocity.current, delta * 60);
-    ref.current.position.copy(position.current);
+
+    // Collision detection
+    const { collisionNormal, overlap } = gravitySystem.checkShipCollision(position.current, 0.5);
+    if (collisionNormal) {
+      position.current.add(collisionNormal.multiplyScalar(overlap));
+      const dot = velocity.current.dot(collisionNormal);
+      if (dot < 0) {
+        // Bounce with slight dampening
+        velocity.current.sub(collisionNormal.multiplyScalar(dot * 1.6));
+      }
+    }
+
+    if (feel.shake > 0) {
+      const shakeOffset = new THREE.Vector3(
+        (Math.random() - 0.5) * feel.shake,
+        (Math.random() - 0.5) * feel.shake,
+        (Math.random() - 0.5) * feel.shake
+      );
+      ref.current.position.copy(position.current).add(shakeOffset);
+    } else {
+      ref.current.position.copy(position.current);
+    }
+
     ref.current.rotation.copy(rotation.current);
 
     if (state.scene.fog instanceof THREE.Fog) {
-      if (nearestPlanet && nearestDist < nearestPlanet.size * 3) {
-         state.scene.fog.color.lerp(new THREE.Color(nearestPlanet.atmosphere), 0.05);
-         state.scene.fog.near = THREE.MathUtils.lerp(state.scene.fog.near, Math.max(10, nearestDist - nearestPlanet.size * 1.5), 0.05);
-         state.scene.fog.far = THREE.MathUtils.lerp(state.scene.fog.far, nearestPlanet.size * 6, 0.05);
+      const atmos = gravitySystem.getAtmosphereState(position.current);
+      if (atmos.inAtmosphere && atmos.color && atmos.distance !== undefined && atmos.planetSize !== undefined) {
+         state.scene.fog.color.lerp(new THREE.Color(atmos.color), 0.05);
+         state.scene.fog.near = THREE.MathUtils.lerp(state.scene.fog.near, Math.max(10, atmos.distance - atmos.planetSize * 1.5), 0.05);
+         state.scene.fog.far = THREE.MathUtils.lerp(state.scene.fog.far, atmos.planetSize * 6, 0.05);
       } else {
          state.scene.fog.color.lerp(new THREE.Color("#000000"), 0.02);
          state.scene.fog.near = THREE.MathUtils.lerp(state.scene.fog.near, 100, 0.02);
@@ -269,6 +276,13 @@ export default function Ship({ position, rotation }: { position: React.RefObject
 
     lasers.current = lasers.current.filter((laser) => {
       laser.position.addScaledVector(laser.direction, delta * 60 * 70);
+      
+      const hit = gravitySystem.checkLaserCollision(laser.position, 2.0);
+      if (hit) {
+        gravitySystem.recordHit(hit.bodyId, laser.position, 6.0);
+        return false;
+      }
+
       return laser.position.distanceTo(position.current) < 5000;
     });
 
@@ -370,7 +384,9 @@ export default function Ship({ position, rotation }: { position: React.RefObject
 
   return (
     <>
-      <primitive ref={ref} object={scene} scale={0.1} />
+      <group ref={ref}>
+        <primitive object={scene} scale={0.1} rotation={[0, Math.PI, 0]} />
+      </group>
       <CameraController ship={ref} rotation={rotation} />
       <group ref={laserGroup} />
       <instancedMesh ref={smokeInstancedMesh} args={[smokeGeometry, smokeMaterial, MAX_SMOKE]} />

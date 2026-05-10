@@ -79,7 +79,7 @@ export default function SpaceScene({ worldSeed }: { worldSeed: string }) {
       {galaxy.map((item) => (
         <group key={item.system.seed} position={item.position}>
           <GalaxyFog seed={item.system.seed} />
-          <Star star={item.system.star} />
+          <Star star={item.system.star} systemPosition={item.position} />
           {item.system.planets.map((planet) => (
             <Planet key={planet.id} planet={planet} center={[0, 0, 0]} systemPosition={item.position} />
           ))}
