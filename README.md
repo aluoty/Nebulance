@@ -6,7 +6,7 @@ A 3D space RPG game in development, using React, Threejs, TS(X)/JS, HTML and CSS
 + S for backward steer
 + A for left steer
 + D for right steer
-+ Q for left/counterwise roll
++ Q for left/counter-clockwise roll
 + E for right/clockwise roll
 + &#8592; for left pivot turn
 + &#8594; for right pivot turn
