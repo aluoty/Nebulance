@@ -1,6 +1,6 @@
 # Nebulance
 + A 3D space RPG game in development, using React, Threejs, TS(X)/JS, HTML and CSS.
-+ Played at [Nebulance](alexanderluo666.github.io/Nebulance/).
++ Played at [Nebulance](https://alexanderluo666.github.io/Nebulance/).
   
 ## Purpose And Vision
 + Name inspiration taken from Nebula(Star clouds) + Balance &#8594; Nebu-lance.
