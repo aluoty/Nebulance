@@ -7,7 +7,7 @@ A 3D space RPG game in development, using React, Threejs, TS(X)/JS, HTML and CSS
 + Influenced by notable game titles: EVE Online, Star Citizen.
 + Using low-poly stylized models, such as ones from https://poly.pizza/.
 + Third 3D game, first proper 3D game. (View: https://github.com/alexanderluo666/Riftfall/tree/archive/ ; https://github.com/alexanderluo666/Velion/)
-+ Focuses on storytelling, gameplay and game vibe
++ Focuses on storytelling, gameplay and game vibe.
 
 ## Ship Controls For Basic Ship
 + W for forward steer
