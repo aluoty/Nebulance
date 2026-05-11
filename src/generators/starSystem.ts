@@ -6,7 +6,7 @@ export function createPRNG(seedStr: string) {
     h = Math.imul(h ^ seedStr.charCodeAt(i), 2654435761);
   }
   let a = h ^ (h >>> 16);
-  return function() {
+  return function () {
     let t = a += 0x6D2B79F5;
     t = Math.imul(t ^ (t >>> 15), t | 1);
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
@@ -63,7 +63,7 @@ function makeAsteroidBelt(id: number, random: () => number): AsteroidBelt {
 
 export function generateStarSystem(worldSystemSeed: string): StarSystem {
   const worldRandom = createPRNG(worldSystemSeed);
-  
+
   const starIndex = Math.floor(worldRandom() * starTypes.length);
   const starConfig = starTypes[starIndex];
   const star: Star = {

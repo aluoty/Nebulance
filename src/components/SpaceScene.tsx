@@ -31,7 +31,7 @@ function GalaxyFog({ seed }: { seed: string }) {
 
   const colors = ["#5511aa", "#1188aa", "#770088", "#0099aa", "#440077"];
   const fogCount = 6;
-  const scale = 1000; 
+  const scale = 1000;
 
   const random = (s: number) => {
     return Math.sin(s * 12.9898) * 43758.5453 - Math.floor(Math.sin(s * 12.9898) * 43758.5453);

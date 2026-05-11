@@ -66,7 +66,7 @@ function CameraController({ ship, rotation }: { ship: React.RefObject<THREE.Obje
     const targetPos = new THREE.Vector3().copy(ship.current.position).add(offset);
 
     camera.position.lerp(targetPos, 1 - Math.exp(-8 * delta));
-    
+
     lookAtTarget.current.lerp(ship.current.position, 1 - Math.exp(-12 * delta));
     camera.lookAt(lookAtTarget.current);
   });
@@ -264,19 +264,19 @@ export default function Ship({ position, rotation }: { position: React.RefObject
     if (state.scene.fog instanceof THREE.Fog) {
       const atmos = gravitySystem.getAtmosphereState(position.current);
       if (atmos.inAtmosphere && atmos.color && atmos.distance !== undefined && atmos.planetSize !== undefined) {
-         state.scene.fog.color.lerp(new THREE.Color(atmos.color), 0.05);
-         state.scene.fog.near = THREE.MathUtils.lerp(state.scene.fog.near, Math.max(10, atmos.distance - atmos.planetSize * 1.5), 0.05);
-         state.scene.fog.far = THREE.MathUtils.lerp(state.scene.fog.far, atmos.planetSize * 6, 0.05);
+        state.scene.fog.color.lerp(new THREE.Color(atmos.color), 0.05);
+        state.scene.fog.near = THREE.MathUtils.lerp(state.scene.fog.near, Math.max(10, atmos.distance - atmos.planetSize * 1.5), 0.05);
+        state.scene.fog.far = THREE.MathUtils.lerp(state.scene.fog.far, atmos.planetSize * 6, 0.05);
       } else {
-         state.scene.fog.color.lerp(new THREE.Color("#000000"), 0.02);
-         state.scene.fog.near = THREE.MathUtils.lerp(state.scene.fog.near, 100, 0.02);
-         state.scene.fog.far = THREE.MathUtils.lerp(state.scene.fog.far, 10000, 0.02);
+        state.scene.fog.color.lerp(new THREE.Color("#000000"), 0.02);
+        state.scene.fog.near = THREE.MathUtils.lerp(state.scene.fog.near, 100, 0.02);
+        state.scene.fog.far = THREE.MathUtils.lerp(state.scene.fog.far, 10000, 0.02);
       }
     }
 
     lasers.current = lasers.current.filter((laser) => {
       laser.position.addScaledVector(laser.direction, delta * 60 * 70);
-      
+
       const hit = gravitySystem.checkLaserCollision(laser.position, 2.0);
       if (hit) {
         gravitySystem.recordHit(hit.bodyId, laser.position, 6.0);
@@ -319,13 +319,13 @@ export default function Ship({ position, rotation }: { position: React.RefObject
       const offset = new THREE.Vector3((Math.random() - 0.5) * 1.5, (Math.random() - 0.5) * 1.5, 3);
       offset.applyEuler(rotation.current);
       const spawnPos = position.current.clone().add(offset);
-      
+
       const backward = new THREE.Vector3(0, 0, 1).applyEuler(rotation.current);
       const spread = new THREE.Vector3((Math.random() - 0.5) * 0.5, (Math.random() - 0.5) * 0.5, (Math.random() - 0.5) * 0.5);
-      
+
       const speed = isBoosting ? Math.random() * 0.8 + 0.8 : Math.random() * 0.3 + 0.2;
       const initialVel = backward.multiplyScalar(speed).add(spread);
-      
+
       smokeRef.current.push({
         position: spawnPos,
         velocity: initialVel,
@@ -353,16 +353,16 @@ export default function Ship({ position, rotation }: { position: React.RefObject
           s.life += delta;
           s.position.addScaledVector(s.velocity, delta * 60);
           s.rotation += s.rotationSpeed * delta;
-          
+
           const progress = s.life / s.maxLife;
           const currentScale = s.scale * (1 + progress * 2);
-          
+
           dummy.position.copy(s.position);
           dummy.rotation.set(s.rotation, s.rotation, s.rotation);
           dummy.scale.setScalar(currentScale);
           dummy.updateMatrix();
           smokeInstancedMesh.current.setMatrixAt(i, dummy.matrix);
-          
+
           if (s.isBoost) {
             color.setHSL(0.55, 1.0, Math.max(0, 0.8 - progress * 0.8));
           } else {

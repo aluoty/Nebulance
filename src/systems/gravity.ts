@@ -10,7 +10,7 @@ export type RegisteredBody = {
 
 class GravitySystem {
   private bodies: Map<string, RegisteredBody> = new Map();
-  private bodyHits: Map<string, Array<{position: THREE.Vector3, radius: number}>> = new Map();
+  private bodyHits: Map<string, Array<{ position: THREE.Vector3, radius: number }>> = new Map();
 
   registerBody(body: RegisteredBody) {
     this.bodies.set(body.id, body);
@@ -39,10 +39,10 @@ class GravitySystem {
   // Returns the combined gravitational pull vector
   getGravityForce(shipPos: THREE.Vector3, delta: number): THREE.Vector3 {
     let gravityForce = new THREE.Vector3();
-    
+
     for (const pData of this.bodies.values()) {
       const dist = shipPos.distanceTo(pData.position);
-      
+
       // Only apply gravity if within 15x planet radius, and outside the solid core
       if (dist < pData.size * 15 && dist > pData.size) {
         const dir = pData.position.clone().sub(shipPos).normalize();
@@ -104,11 +104,11 @@ class GravitySystem {
   // Returns physics modifiers when near the surface
   getLandingFeel(shipPos: THREE.Vector3) {
     const state = this.getAtmosphereState(shipPos);
-    
+
     if (state.inAtmosphere && state.ratio !== undefined && state.ratio > 0.7) {
       // 0.7 to 1.0 (approaching surface) -> heavier controls
       const intensity = (state.ratio - 0.7) / 0.3; // 0 to 1
-      
+
       return {
         accelerationMult: 1 - (intensity * 0.4), // 40% slower acceleration
         maxSpeedMult: 1 - (intensity * 0.3),     // 30% lower max speed

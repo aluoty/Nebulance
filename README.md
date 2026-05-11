@@ -28,5 +28,6 @@
 + Spaceship by Quaternius (https://poly.pizza/m/uCeLfsdmNP)
 + Asteroid by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/enaIlQWET9a)
 + SVG icon by SVGAI (https://www.svgai.org/)
++ Audio from Pixabay Music (https://pixabay.com/music/)
 
 ![Logo](./public/favicon.svg)
