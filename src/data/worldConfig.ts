@@ -92,18 +92,23 @@ export const sceneScaleConfig = {
 } as const;
 
 /** Default ship spawn; home station is placed within nearSpawnHalfExtent of this point. */
-export const defaultSpawn = { x: 0, y: 50, z: 120 } as const;
+export const defaultSpawn = { x: 0, y: 55, z: 95 } as const;
 
 export const stationConfig = {
-  /** Stations spawn inside a cube of this size centered on origin. */
-  spawnVolume: 100,
-  /** Home station must stay within ±this distance of defaultSpawn on each axis. */
-  nearSpawnHalfExtent: 50,
+  /** Home station placement cube (150×150×150) centered on origin. */
+  placementBoxSize: 150,
+  /** Min gap between station and nearest planet surface. */
+  minPlanetClearance: 50,
+  /** Extra stations outside the home box use this world span. */
+  outerSpawnVolume: 100,
   countMin: 2,
   countMax: 3,
   minSeparation: 28,
   proximityRange: 55,
-  modelScale: 0.018,
+  modelScale: 0.068,
+  linkDurationMs: 1400,
+  /** Ship gravity multiplier when docked near a station. */
+  dockedGravityMult: 0.02,
 } as const;
 
 export const audioConfig = {

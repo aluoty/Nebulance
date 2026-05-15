@@ -1,10 +1,12 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import SpaceScene from "./components/SpaceScene";
 import DockInventory from "./components/DockInventory";
 import StationPrompt from "./components/StationPrompt";
 import GuideMenu from "./components/GuideMenu";
 import type { StationProximityState } from "./types/station";
+import { generateGalaxy } from "./generators/starSystem";
 import { generateStations, getHomeStation } from "./generators/stations";
+import { stationConfig } from "./data/worldConfig";
 
 const generateRandomSeed = () => Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -28,6 +30,9 @@ export default function App() {
   });
   const [inputWorldSeed, setInputWorldSeed] = useState(worldSeed);
   const [dockOpen, setDockOpen] = useState(false);
+  const [isLinking, setIsLinking] = useState(false);
+  const [linkProgress, setLinkProgress] = useState(0);
+  const linkTimerRef = useRef<number | null>(null);
   const [stationProximity, setStationProximity] = useState<StationProximityState>({
     near: false,
     station: null,
@@ -36,17 +41,55 @@ export default function App() {
 
   const guideHomeStation = useMemo(() => {
     if (gameState !== "GUIDE") return null;
-    return getHomeStation(generateStations(worldSeed));
+    return getHomeStation(generateStations(worldSeed, generateGalaxy(worldSeed)));
   }, [gameState, worldSeed]);
 
   useEffect(() => {
     localStorage.setItem("nebulance_worldSeed", worldSeed);
   }, [worldSeed]);
 
+  const startStationLink = useCallback(() => {
+    if (linkTimerRef.current !== null) {
+      window.clearInterval(linkTimerRef.current);
+    }
+    setIsLinking(true);
+    setLinkProgress(0);
+    const start = performance.now();
+    const duration = stationConfig.linkDurationMs;
+
+    linkTimerRef.current = window.setInterval(() => {
+      const t = Math.min(1, (performance.now() - start) / duration);
+      setLinkProgress(t);
+      if (t >= 1) {
+        if (linkTimerRef.current !== null) {
+          window.clearInterval(linkTimerRef.current);
+          linkTimerRef.current = null;
+        }
+        setIsLinking(false);
+        setDockOpen(true);
+      }
+    }, 32);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (linkTimerRef.current !== null) {
+        window.clearInterval(linkTimerRef.current);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        if (dockOpen) {
+        if (isLinking) {
+          if (linkTimerRef.current !== null) {
+            window.clearInterval(linkTimerRef.current);
+            linkTimerRef.current = null;
+          }
+          setIsLinking(false);
+          setLinkProgress(0);
+        } else if (dockOpen) {
           setDockOpen(false);
         } else if (gameState === "PLAYING") {
           setGameState("QUIT_CONFIRM");
@@ -55,14 +98,22 @@ export default function App() {
         }
         return;
       }
-      if ((e.key === "e" || e.key === "E") && gameState === "PLAYING") {
+      if ((e.key === "e" || e.key === "E") && gameState === "PLAYING" && !isLinking) {
         e.preventDefault();
-        setDockOpen((open) => !open);
+        if (dockOpen) {
+          setDockOpen(false);
+          return;
+        }
+        if (stationProximity.near && stationProximity.station) {
+          startStationLink();
+          return;
+        }
+        setDockOpen(true);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [gameState, dockOpen]);
+  }, [gameState, dockOpen, isLinking, stationProximity.near, stationProximity.station, startStationLink]);
 
   const handlePlayClick = () => {
     setInputWorldSeed(worldSeed);
@@ -235,8 +286,20 @@ export default function App() {
 
       {(gameState === "PLAYING" || gameState === "QUIT_CONFIRM") && (
         <>
-          <SpaceScene worldSeed={worldSeed} dockOpen={dockOpen} onStationProximityChange={setStationProximity} />
-          <StationPrompt visible={stationProximity.near && !dockOpen} station={stationProximity.station} />
+          <SpaceScene
+            worldSeed={worldSeed}
+            dockOpen={dockOpen}
+            onStationProximityChange={setStationProximity}
+            linkTarget={stationProximity.near ? stationProximity.station : null}
+            isLinking={isLinking}
+            linkProgress={linkProgress}
+          />
+          <StationPrompt
+            visible={(stationProximity.near || isLinking) && !dockOpen}
+            station={stationProximity.station}
+            isLinking={isLinking}
+            linkProgress={linkProgress}
+          />
           <DockInventory
             open={dockOpen}
             onClose={() => setDockOpen(false)}

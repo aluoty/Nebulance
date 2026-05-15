@@ -8,9 +8,16 @@ export type RegisteredBody = {
   isStar?: boolean;
 };
 
+type StaticStationAnchor = {
+  position: THREE.Vector3;
+  influenceRadius: number;
+};
+
 class GravitySystem {
   private bodies: Map<string, RegisteredBody> = new Map();
   private bodyHits: Map<string, Array<{ position: THREE.Vector3, radius: number }>> = new Map();
+  private stationAnchors: StaticStationAnchor[] = [];
+  private dockedGravityMult = 0.02;
 
   registerBody(body: RegisteredBody) {
     this.bodies.set(body.id, body);
@@ -23,6 +30,27 @@ class GravitySystem {
 
   unregisterBody(id: string) {
     this.bodies.delete(id);
+  }
+
+  setStationAnchors(
+    stations: Array<{ position: [number, number, number] }>,
+    influenceRadius: number,
+    dockedGravityMult: number
+  ) {
+    this.stationAnchors = stations.map((s) => ({
+      position: new THREE.Vector3(s.position[0], s.position[1], s.position[2]),
+      influenceRadius,
+    }));
+    this.dockedGravityMult = dockedGravityMult;
+  }
+
+  private gravityDampenNearStations(shipPos: THREE.Vector3): number {
+    for (const anchor of this.stationAnchors) {
+      if (shipPos.distanceTo(anchor.position) < anchor.influenceRadius) {
+        return this.dockedGravityMult;
+      }
+    }
+    return 1;
   }
 
   recordHit(id: string, position: THREE.Vector3, radius: number) {
@@ -52,7 +80,7 @@ class GravitySystem {
       }
     }
 
-    return gravityForce;
+    return gravityForce.multiplyScalar(this.gravityDampenNearStations(shipPos));
   }
 
   // Returns info about the nearest atmosphere

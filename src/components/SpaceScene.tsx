@@ -11,10 +11,13 @@ import { generateStations, getHomeStation, getNewGameShipPose } from "../generat
 import { defaultSpawn } from "../data/worldConfig";
 
 const NEW_GAME_FLAG = "nebulance_newGame";
-import { backgroundStarsConfig, sceneScaleConfig } from "../data/worldConfig";
+import { backgroundStarsConfig, sceneScaleConfig, stationConfig } from "../data/worldConfig";
+import { gravitySystem } from "../systems/gravity";
 import { gameAudio } from "../systems/audio";
 import SpaceStation from "./SpaceStation";
 import StationProximity from "./StationProximity";
+import StationLinkLine from "./StationLinkLine";
+import StationLinkRing from "./StationLinkRing";
 import type { StationProximityState } from "../types/station";
 
 function GalaxyFog({ seed }: { seed: string }) {
@@ -68,14 +71,28 @@ export default function SpaceScene({
   worldSeed,
   dockOpen = false,
   onStationProximityChange,
+  linkTarget = null,
+  isLinking = false,
+  linkProgress = 0,
 }: {
   worldSeed: string;
   dockOpen?: boolean;
   onStationProximityChange?: (state: StationProximityState) => void;
+  linkTarget?: StationProximityState["station"];
+  isLinking?: boolean;
+  linkProgress?: number;
 }) {
   const galaxy = useMemo(() => generateGalaxy(worldSeed), [worldSeed]);
-  const stations = useMemo(() => generateStations(worldSeed), [worldSeed]);
+  const stations = useMemo(() => generateStations(worldSeed, galaxy), [worldSeed, galaxy]);
   const homeStation = useMemo(() => getHomeStation(stations), [stations]);
+
+  useEffect(() => {
+    gravitySystem.setStationAnchors(
+      stations,
+      stationConfig.proximityRange * 1.5,
+      stationConfig.dockedGravityMult
+    );
+  }, [stations]);
 
   const isNewGame = localStorage.getItem(NEW_GAME_FLAG) === "true";
 
@@ -138,9 +155,34 @@ export default function SpaceScene({
         </group>
       ))}
 
-      {stations.map((station) => (
-        <SpaceStation key={station.id} station={station} />
-      ))}
+      {stations.map((station) => {
+        const isTarget = linkTarget?.id === station.id;
+        return (
+          <group key={station.id}>
+            <SpaceStation
+              station={station}
+              linkHighlight={isTarget && !dockOpen}
+              linkProgress={isTarget ? linkProgress : 0}
+            />
+            {isTarget && !dockOpen && (
+              <StationLinkRing
+                stationPosition={station.position}
+                active
+                linkProgress={linkProgress}
+              />
+            )}
+          </group>
+        );
+      })}
+
+      {linkTarget && !dockOpen && (
+        <StationLinkLine
+          shipPos={shipPos}
+          stationPosition={linkTarget.position}
+          visible
+          linkProgress={isLinking ? linkProgress : 0.35}
+        />
+      )}
 
       {onStationProximityChange && (
         <StationProximity shipPos={shipPos} stations={stations} onChange={onStationProximityChange} />
