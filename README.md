@@ -18,14 +18,15 @@
 + S for backward steer
 + A for left steer
 + D for right steer
-+ Q for left/counter-clockwise roll
-+ E for right/clockwise roll
++ Z for left/counter-clockwise roll
++ C for right/clockwise roll
 + &#8592; for left pivot turn
 + &#8594; for right pivot turn
 + &#8593; for up steer
 + &#8595; for down steer
 + Shift for boost
 + Space for laser beam shoot
++ E for dock and inventory
 
 ## Credit for resources
 + Spaceship by Quaternius [Poly Pizza](https://poly.pizza/m/uCeLfsdmNP)
