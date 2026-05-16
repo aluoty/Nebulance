@@ -9,7 +9,7 @@
 
 ## Purpose And Vision
 + Name inspiration taken from Nebula(Star clouds) + Balance &#8594; Nebu-lance.
-+ To build a game from scratch while learning React, Threejs, Nodejs, TS, HTML and CSS.
++ To build a game from scratch while learning React, Threejs, TS, HTML and CSS.
 + Influenced by notable game titles: EVE Online, Star Citizen.
 + Using low-poly stylized models, such as ones from [Poly Pizza](https://poly.pizza/).
 + First properly made and maintained 3D game of mine.
