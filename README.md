@@ -3,18 +3,18 @@
 + You can play the game here at [Nebulance](https://alexanderluo666.github.io/Nebulance/).
 + For best experience, when a new version is released, export the save and import it on another version is recommended.
 
-## Naming of Versions
+## Naming of Versions :page_facing_up:
 + No versions before v1.0.0 are recorded, for their incompleteness, you can access them via commits.
 + First version is v1.0.0.
 + Each major version(refers to first digit) contains better features than previous one.
 + A subversion or a subrelease is indicated by the second digit, it contains minor features and upgrades.
 + A bug-fix version is indicated by the third digit, it contains bug fixes, and might also contain 'alpha', 'beta' versions for minor but unstable or non-game related-content(README.md updates), which are not limited to numbers.
 
-## Features
+## Features :star:
 + Choose multiple ships and fly around the beautiful man-made galaxy as a plane, explore and have fun!
 + Whether you like gathering resources or fighting and fleeing, this game is perfect for you!
 
-## Purpose And Vision
+## Purpose And Vision :eyes:
 + Name inspiration taken from Nebula(Star clouds) + Balance &#8594; Nebu-lance.
 + To build a game from scratch while learning React, Threejs, TS, HTML and CSS.
 + Influenced by notable game titles: EVE Online, Star Citizen.
@@ -24,7 +24,8 @@
 + Naming for Nebulaster comes from Nebula and ster as a suffix.
 + Naming for Ghostrider comes from Ghost and rider.
 + Naming for Haloist comes from Halo and ist.
-## Ship Controls For Basic Ship
+  
+## Ship Controls For Basic Ship :keyboard:
 + W for forward steer
 + S for backward steer
 + A for left steer
@@ -40,7 +41,7 @@
 + E for dock and inventory
 + ESC for quit
 
-## Credit for resources
+## Credit for resources :open_file_folder:
 + Spaceship by Quaternius used for [SpaceShip1](https://poly.pizza/m/uCeLfsdmNP)
 + Asteroid by Poly by Google [CC-BY](https://creativecommons.org/licenses/by/3.0/) via [Poly Pizza](https://poly.pizza/m/enaIlQWET9a)
 + International Space Station by Poly by Google [CC-BY](https://creativecommons.org/licenses/by/3.0/) via [Poly Pizza](https://poly.pizza/m/d3Fq5H6ne8E)
