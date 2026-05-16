@@ -1,8 +1,7 @@
 # Nebulance :dizzy:
 + A 3D space RPG game in development, using React, Threejs, TS(X)/JS, HTML and CSS.
 + You can play the game here at [Nebulance](https://alexanderluo666.github.io/Nebulance/).
-+ For best experience, when a new version is released, wipe the save by exiting using ESC and entering a new seed.
-+ Not wiping save when upgrading to a newer version(in releases not commits) can and may cause bugs.
++ For best experience, when a new version is released, export the save and import it on another version is recommended.
 
 ## Naming of Versions
 + No versions before v1.0.0 are recorded, for their incompleteness, you can access them via commits.
