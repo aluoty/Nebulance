@@ -42,11 +42,11 @@ export default function StationDetachPrompt({ station, visible, detachProgress }
               textShadow: "0 0 12px rgba(255,120,80,0.45)",
             }}
           >
-            UNDOCKING
+            DETACHING
           </div>
           <div style={{ color: "#aabbcc", fontSize: "12px", marginBottom: "6px" }}>{station.name}</div>
           <div style={{ color: "#ffaa88", fontSize: "13px", letterSpacing: "3px", marginBottom: "8px" }}>
-            DETACHING… {Math.round(detachProgress * 100)}%
+            DE-ATTACHING… {Math.round(detachProgress * 100)}%
           </div>
           <div
             style={{

@@ -35,10 +35,11 @@ type Props = {
   ownedShipIds: ShipId[];
   balance: number;
   onPurchaseShip: (id: ShipId) => void;
-  onUndock: () => void;
+  onDetach: () => void;
   onRefuelCharge: () => void;
   onDockAttach: (stationId: string) => void;
   refuelCost: number;
+  isAttached?: boolean;
   isDetaching?: boolean;
 };
 
@@ -51,26 +52,35 @@ export default function DockInventory({
   ownedShipIds,
   balance,
   onPurchaseShip,
-  onUndock,
+  onDetach,
   onRefuelCharge,
   onDockAttach,
   refuelCost,
+  isAttached = false,
   isDetaching = false,
 }: Props) {
   const [tab, setTab] = useState<Tab>(activeStation ? "dock" : "inventory");
   const [inventory, setInventory] = useState<InventoryItem[]>(loadInventory);
-  const [dockStatus, setDockStatus] = useState<"idle" | "docked" | "undocking">(() => {
-    return localStorage.getItem("nebulance_docked") === "true" ? "docked" : "idle";
+  const [dockStatus, setDockStatus] = useState<"idle" | "attached" | "detaching">(() => {
+    return localStorage.getItem("nebulance_docked") === "true" ? "attached" : "idle";
   });
+
+  useEffect(() => {
+    if (isAttached) setDockStatus("attached");
+  }, [isAttached]);
+
+  useEffect(() => {
+    if (!isDetaching && dockStatus === "detaching") setDockStatus("idle");
+  }, [isDetaching, dockStatus]);
 
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "e" || e.key === "E" || e.key === "Escape") {
         e.preventDefault();
-        if (dockStatus === "docked" && !isDetaching) {
-          setDockStatus("undocking");
-          onUndock();
+        if (isAttached && activeStation && !isDetaching) {
+          setDockStatus("detaching");
+          onDetach();
         } else {
           onClose();
         }
@@ -78,14 +88,14 @@ export default function DockInventory({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose, onUndock, dockStatus, isDetaching]);
+  }, [open, onClose, onDetach, isAttached, activeStation, isDetaching]);
 
   useEffect(() => {
     localStorage.setItem("nebulance_inventory", JSON.stringify(inventory));
   }, [inventory]);
 
   useEffect(() => {
-    localStorage.setItem("nebulance_docked", dockStatus === "docked" ? "true" : "false");
+    localStorage.setItem("nebulance_docked", dockStatus === "attached" ? "true" : "false");
   }, [dockStatus]);
 
   useEffect(() => {
@@ -93,7 +103,7 @@ export default function DockInventory({
   }, [open, activeStation]);
 
   useEffect(() => {
-    if (!isDetaching && dockStatus === "undocking") {
+    if (!isDetaching && dockStatus === "detaching") {
       setDockStatus("idle");
     }
   }, [isDetaching, dockStatus]);
@@ -116,23 +126,27 @@ export default function DockInventory({
       }
       return [...prev, { id: "fuel-cell", name: "Fuel Cell", qty: 4, icon: "⛽" }];
     });
-    setDockStatus("docked");
+    setDockStatus("attached");
     onDockAttach(activeStation.id);
     window.dispatchEvent(new Event("nebulance-refuel"));
   };
 
-  const handleDock = () => {
+  const handleAttach = () => {
     if (dockStatus === "idle") {
-      setDockStatus("docked");
+      setDockStatus("attached");
       if (activeStation) onDockAttach(activeStation.id);
-    } else if (dockStatus === "docked") {
-      setDockStatus("undocking");
-      onUndock();
+    } else if (dockStatus === "attached") {
+      setDockStatus("detaching");
+      onDetach();
     }
   };
 
   const statusLabel =
-    dockStatus === "docked" ? "DOCKED — STATION LINK ACTIVE" : dockStatus === "undocking" ? "UNDOCKING..." : "IN FLIGHT";
+    dockStatus === "attached"
+      ? "ATTACHED — STATION LINK ACTIVE"
+      : dockStatus === "detaching"
+        ? "DETACHING..."
+        : "IN FLIGHT";
 
   const tabStyle = (active: boolean): React.CSSProperties => ({
     flex: 1,
@@ -196,7 +210,7 @@ export default function DockInventory({
             <>
               <p style={{ margin: "0 0 16px", color: "#aabbcc", fontSize: "13px", lineHeight: 1.5 }}>
                 Swap your active hull at <span style={{ color: "#00ffff" }}>{activeStation.name}</span>. Changes apply
-                when you undock.
+                when you detach.
               </p>
               <ShipSelector
                 selectedId={selectedShipId}
@@ -217,7 +231,7 @@ export default function DockInventory({
                 <>
                   <p style={{ margin: "0 0 8px", color: "#aabbcc", fontSize: "13px", lineHeight: 1.5 }}>
                     Attached to <span style={{ color: "#00ffff" }}>{activeStation.name}</span>. Resupply fuel and
-                    manage cargo before undocking.
+                    manage cargo before detaching.
                   </p>
                   <p style={{ margin: "0 0 16px", color: "#ffcc66", fontSize: "12px", letterSpacing: "2px" }}>
                     BALANCE: {formatPrice(balance)}
@@ -233,7 +247,7 @@ export default function DockInventory({
                     }}
                   >
                     STATUS:{" "}
-                    <span style={{ color: dockStatus === "docked" ? "#66ff99" : "#ffcc66" }}>{statusLabel}</span>
+                    <span style={{ color: dockStatus === "attached" ? "#66ff99" : "#ffcc66" }}>{statusLabel}</span>
                   </div>
                   <button
                     type="button"
@@ -261,8 +275,8 @@ export default function DockInventory({
                   </p>
                   <button
                     type="button"
-                    onClick={handleDock}
-                    disabled={dockStatus === "undocking" || isDetaching}
+                    onClick={handleAttach}
+                    disabled={dockStatus === "detaching" || isDetaching}
                     style={{
                       width: "100%",
                       padding: "12px",
@@ -270,12 +284,12 @@ export default function DockInventory({
                       border: "1px solid #ff6666",
                       color: "#ff8888",
                       borderRadius: "6px",
-                      cursor: dockStatus === "undocking" ? "wait" : "pointer",
+                      cursor: dockStatus === "detaching" ? "wait" : "pointer",
                       letterSpacing: "2px",
                       fontSize: "13px",
                     }}
                   >
-                    {dockStatus === "docked" ? "UNDOCK" : dockStatus === "undocking" ? "UNDOCKING..." : "DOCK"}
+                    {dockStatus === "attached" ? "DETACH" : dockStatus === "detaching" ? "DETACHING..." : "ATTACH"}
                   </button>
                 </>
               ) : (
@@ -352,7 +366,7 @@ export default function DockInventory({
         </div>
 
         <p style={{ margin: 0, padding: "0 20px 16px", fontSize: "11px", color: "#667788", textAlign: "center" }}>
-          {dockStatus === "docked" ? "Press E or ESC to undock" : "Press E or ESC to close"}
+          {isAttached && activeStation ? "Press E or ESC to detach" : "Press E or ESC to close"}
         </p>
       </div>
     </>

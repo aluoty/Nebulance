@@ -194,7 +194,6 @@ export default function App() {
           setIsLinking(false);
           setLinkProgress(0);
         } else if (isDocked && gameState === "PLAYING" && !isDetaching) {
-          setDockOpen(false);
           startDetach();
         } else if (dockOpen) {
           setDockOpen(false);
@@ -208,7 +207,6 @@ export default function App() {
       if ((e.key === "e" || e.key === "E") && gameState === "PLAYING" && !isLinking && !isDetaching) {
         e.preventDefault();
         if (isDocked) {
-          setDockOpen(false);
           startDetach();
           return;
         }
@@ -490,10 +488,11 @@ export default function App() {
             ownedShipIds={ownedShipIds}
             balance={balance}
             onPurchaseShip={handlePurchaseShip}
-            onUndock={startDetach}
+            onDetach={startDetach}
             onRefuelCharge={handleRefuelCharge}
             onDockAttach={handleDockAttach}
             refuelCost={REFUEL_COST}
+            isAttached={isDocked}
             isDetaching={isDetaching}
           />
           <div
@@ -508,7 +507,7 @@ export default function App() {
             }}
           >
             <div>Press ESC to pause/quit</div>
-            <div style={{ marginTop: 6, fontSize: "12px" }}>E — Dock / Undock · Z/C — Roll</div>
+            <div style={{ marginTop: 6, fontSize: "12px" }}>E — Dock / Detach · Z/C — Roll</div>
           </div>
           <div
             style={{
