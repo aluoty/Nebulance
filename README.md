@@ -2,6 +2,7 @@
 + A 3D space RPG game in development, using React, Threejs, TS(X)/JS, HTML and CSS.
 + You can play the game here at [Nebulance](https://alexanderluo666.github.io/Nebulance/).
 + For best experience, when a new version is released, wipe the save by exiting using ESC and entering a new seed.
++ Not wiping save when upgrading to a newer version can and may cause bugs.
 
 ## Features
 + Choose multiple ships and fly around the beautiful man-made galaxy as a plane, explore and have fun!
@@ -14,7 +15,9 @@
 + Using low-poly stylized models, such as ones from [Poly Pizza](https://poly.pizza/).
 + First properly made and maintained 3D game of mine.
 + Focuses on storytelling, gameplay and game vibe.
-
++ Naming for Nebulaster comes from Nebula and ster as a suffix.
++ Naming for Ghostrider comes from Ghost and rider.
++ Naming for Haloist comes from Halo and ist.
 ## Ship Controls For Basic Ship
 + W for forward steer
 + S for backward steer
