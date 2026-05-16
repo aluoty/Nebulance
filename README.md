@@ -4,7 +4,8 @@
 + For best experience, when a new version is released, wipe the save by exiting using ESC and entering a new seed.
 
 ## Features
-+ Fly around the beautiful man-made galaxy as a plane, explore and have fun!  
++ Choose multiple ships and fly around the beautiful man-made galaxy as a plane, explore and have fun!
++ Whether you like gathering resources or fighting and fleeing, this game is perfect!
 
 ## Purpose And Vision
 + Name inspiration taken from Nebula(Star clouds) + Balance &#8594; Nebu-lance.
