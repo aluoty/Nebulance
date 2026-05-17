@@ -3,6 +3,7 @@
 + You can play the game here at [Nebulance](https://alexanderluo666.github.io/Nebulance/).
 + For best experience, when a new version is released, export the save and import it on another version is recommended.
 + You can always play previous versions up to v1.0.0, however playing the lastest version is always the most recommended.
++ Reading the guide at the start of a new session or migrating to a new version is recommended.
 
 ## Naming of Versions :page_facing_up:
 + No versions before v1.0.0 are recorded, for their incompleteness, you can access them via commits.
