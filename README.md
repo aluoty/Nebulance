@@ -1,8 +1,11 @@
 # Nebulance :dizzy:
-+ A 3D space RPG game in development, using React, Threejs, TS(X)/JS, HTML and CSS.
-+ You can play the game here at [Nebulance](https://alexanderluo666.github.io/Nebulance/).
++ A indie 3D space RPG game in development, using React, Threejs, TS(X)/JS, HTML and CSS.
++ You can play the game here at [Nebulance](https://nebulance.alexanderluo.com).
 + For best experience, when a new version is released, export the save and import it on another version is recommended.
 + You can always play previous versions up to v1.0.0, however playing the lastest version is always the most recommended.
++ Reading the guide at the start of a new session or migrating to a new version is recommended.
++ For the best playing experience on a specific version(e.g. v1.0.0), download a version locally if possible at [Releases](https://github.com/alexanderluo666/Nebulance/releases).
++ It is also recommended to look at the features of a new version via the [Releases](https://github.com/alexanderluo666/Nebulance/releases).
 
 ## Naming of Versions :page_facing_up:
 + No versions before v1.0.0 are recorded, for their incompleteness, you can access them via commits.
@@ -14,6 +17,7 @@
 ## Features :star:
 + Choose multiple ships and fly around the beautiful man-made galaxy as a plane, explore and have fun!
 + Whether you like gathering resources or fighting and fleeing, this game is perfect for you!
++ Unlock different features and tools via purchasing by N$, Nebulance Dollars.
 
 ## Purpose And Vision :eyes:
 + Name inspiration taken from Nebula(Star clouds) + Balance &#8594; Nebu-lance.
