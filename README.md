@@ -23,9 +23,13 @@
 npx wrangler pages dev dist --d1=nebulance_db
 npm run dev
 ```
-+ Also runs by:
++ Also runs locally by:
 ``` bash
 npm run stack
+```
++ Runs online by:
+```bash
+npm run deploy
 ```
 ## Purpose And Vision :eyes:
 + Name inspiration taken from Nebula(Star clouds) + Balance &#8594; Nebu-lance.
