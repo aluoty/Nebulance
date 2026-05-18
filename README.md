@@ -1,5 +1,5 @@
 # Nebulance :dizzy:
-+ A indie 3D space RPG game in development, using React, Threejs, TS(X)/JS, HTML and CSS.
++ An indie 3D space RPG game in development, using React, Threejs, TS, HTML and CSS.
 + You can play the game here at [Nebulance](https://nebulance.alexanderluo.com).
 + For best experience, when a new version is released, export the save and import it on another version is recommended.
 + You can always play previous versions up to v1.0.0, however playing the lastest version is always the most recommended.
@@ -22,7 +22,7 @@
 ## Purpose And Vision :eyes:
 + Name inspiration taken from Nebula(Star clouds) + Balance &#8594; Nebu-lance.
 + To build a game from scratch while learning React, Threejs, TS, HTML and CSS.
-+ Influenced by notable game titles: EVE Online, Star Citizen.
++ Influenced and inspired by notable game titles: EVE Online, Star Citizen and No Man's Sky.
 + Using low-poly stylized models, such as ones from [Poly Pizza](https://poly.pizza/).
 + First properly made and maintained 3D game of mine.
 + Focuses on storytelling, gameplay and game vibe.
